@@ -1,2 +1,0 @@
-# blocipedia
-A rails wiki
