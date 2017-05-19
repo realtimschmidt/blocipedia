@@ -19,6 +19,9 @@ gem 'coffee-rails', '~> 4.1.0'
 gem 'jquery-rails'
 gem 'turbolinks'
 gem 'figaro'
+gem 'bootstrap-sass'
+gem 'orm_adapter', '~> 0.5.0'
+gem 'devise'
 
 group :development, :test do
   gem 'byebug'
@@ -29,5 +32,3 @@ group :development, :test do
   gem 'factory_girl_rails'
   gem 'pry-rails'
 end
-
-gem 'bootstrap-sass'
