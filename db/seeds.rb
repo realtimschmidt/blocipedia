@@ -3,7 +3,7 @@ require 'random_data'
 # Create Users
 5.times do
   User.create!(
-  email:    RandomData.random_email,
+  email:    Faker::Internet.email,
   password: RandomData.random_sentence
   )
 end
@@ -20,7 +20,7 @@ end
 # Create standard user
 1.times do
   User.create!(
-  email:    'schmidt.tim.j@gmail.com',
+  email:    Faker::Internet.email,
   password: 'helloworld'
   )
 end
@@ -30,7 +30,7 @@ users = User.all
 50.times do
   Wiki.create!(
     user:   users.sample,
-    title:  RandomData.random_sentence,
+    title:  Faker::Name.title,
     body:   RandomData.random_paragraph
   )
 end
