@@ -11,7 +11,7 @@ end
 # Create admin user
 1.times do
   User.create!(
-  email:     'realtimschmidt@gmail.com',
+  email:     'admin@example.com',
   password:  'helloworld',
   role:       2
   )

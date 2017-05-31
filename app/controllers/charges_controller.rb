@@ -22,21 +22,19 @@ class ChargesController < ApplicationController
       :currency    => 'usd'
     )
 
-    Stripe::Subscription.create(
-      :customer => customer.id,
-      :plan     => "premium"
-    )
+    flash[:success] = "Thanks for upgrading, #{current_user.email}!"
+    current_user.update_attribute(:role, 'premium')
+    redirect_to edit_user_registration_path
 
-    current_user.set_attribute(:role, 'premium')
+#    Stripe::Subscription.create(
+#      :customer => customer.id,
+#      :plan => "premium",
+#    )
 
-  rescue Stripe::CardError => e
+#    current_user.set_attribute(:role, 'premium')
+
+    rescue Stripe::CardError => e
     flash[:error] = e.message
     redirect_to new_charge_path
-  end
-
-  def downgrade
-    subscription = Stripe::Subscription.retrieve("sub_49ty4767H20z6a")
-    subscription.plan = "standard"
-    subscription.save
   end
 end
