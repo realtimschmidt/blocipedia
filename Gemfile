@@ -24,6 +24,7 @@ gem 'orm_adapter', '~> 0.5.0'
 gem 'devise'
 gem 'pundit'
 gem 'stripe'
+gem 'redcarpet'
 
 group :development, :test do
   gem 'byebug'
