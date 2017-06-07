@@ -38,7 +38,6 @@
 
 <h3>Membership</h3>
 <p>Your current membership level is: <strong><%= @user.role.capitalize %></strong></p>
-<% if @user.role == 'standard' %>
   <%= form_tag charges_path do %>
     <article>
       <% if flash[:error].present? %>
@@ -57,9 +56,7 @@
             data-amount="1500"
             data-locale="auto"></script>
   <% end %>
-<% elsif @user.role == 'premium' %>
-  <%= link_to "Downgrade Account", downgrade_index_path, method: :create, class: 'btn btn-danger', data: { confirm: 'Are you sure you want to downgrade your account? All of your private wikis will be made public, and you will have to pay again to upgrade your account later.' } %>
-<% end %>
+
 
 <h3>Cancel my account</h3>
 

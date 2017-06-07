@@ -20,7 +20,7 @@
       <div class="form-group">
       <% if current_user.admin? || current_user.premium? %>
         <%= f.label :private do %>
-          <%= f.check_box :private %> Private wiki
+          <%= f.check_box :private, checked: @wiki.private? %> Private wiki
         <% end %>
       <% end %>
       </div>

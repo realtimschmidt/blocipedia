@@ -1,0 +1,32 @@
+<div class="form-group">
+  <div class="col-md-4">
+
+  </div>
+  <div class="col-md-8">
+    <p>Collaborators</p>
+    <% collaborator_ids = @wiki.collaborator_ids %>
+    <% User.all.each do |user| %>
+      <div class="user">
+        <%= check_box_tag "wiki[collaborator_ids][]", user.id, collaborator_ids.include?(user.id) %>
+        <%= user.email %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<% if current_user.premium? || current_user.admin? %>
+  <h3>Add Collaborators</h3>
+
+  <%= form_for [@wiki, Collaborator.new] do |c| %>
+    <%= email_field_tag :collaborator %>
+    <%= c.submit "Add collaborator", class: 'btn btn-primary' %>
+  <% end %>
+
+  <h3>Manage Collaborators</h3>
+
+  <% wiki.collaborators.each do |c| %>
+    <% user = User.find(c.user_id) %>
+    <%= user.email %>
+    <%= link_to "Delete", wiki_collaborator_path(@wiki, c), class: 'btn btn-danger', method: :delete%>
+  <% end %>
+<% end %>

@@ -1,30 +1,23 @@
 class WikisController < ApplicationController
   def index
-    if current_user.standard?
-      @wikis = Wiki.where(private: false)
-    else
-      @wikis = policy_scope(Wiki)
-    end
+    @wikis = policy_scope(Wiki)
   end
 
-  def show
-    @wiki = Wiki.find(params[:id])
+  def create
+    @wiki = Wiki.new(params[:id])
+    @wiki.assign_attributes(wiki_params)
+    authorize @wiki
+
+    if @wiki.save
+      redirect_to @wiki, notice: "Wiki was created."
+    else
+      flash.now[:alert] = "Error creating Wiki."
+      render :new
+    end
   end
 
   def new
     @wiki = Wiki.new
-  end
-
-  def create
-    @wiki = current_user.wikis.new(wiki_params)
-
-    if @wiki.save
-      flash[:notice] = "Wiki was saved."
-      redirect_to @wiki
-    else
-      flash.now[:alert] = "There was an error saving the wiki. Please try again."
-      render :new
-    end
   end
 
   def edit
@@ -33,10 +26,10 @@ class WikisController < ApplicationController
 
   def update
     @wiki = Wiki.find(params[:id])
-    authorize @wiki
+    @wiki.assign_attributes(wiki_params)
 
-    if @wiki.update(wiki_params)
-      flash[:notice] = "Wiki was updated."
+    if @wiki.save
+      flash[:notice] = "Wiki was updated"
       redirect_to @wiki
     else
       flash.now[:alert] = "There was an error saving the wiki. Please try again."
@@ -44,14 +37,18 @@ class WikisController < ApplicationController
     end
   end
 
+  def show
+    @wiki = Wiki.find(params[:id])
+  end
+
   def destroy
     @wiki = Wiki.find(params[:id])
 
     if @wiki.destroy
-      flash[:notice] = "\"#{@wiki.title}\" was deleted successfully."
-      redirect_to wikis_path
+      flash[:notice] = "\"#{@wiki.title}\" was deleted."
+      redirect_to action: :index
     else
-      flash.now[:alert] = "There was an error deleting the wiki."
+      flash.now[:alert] = "There was an error deleting the topic."
       render :show
     end
   end

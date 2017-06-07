@@ -27,7 +27,7 @@ class WikiPolicy < ApplicationPolicy
   end
 
   def destroy?
-    wiki.user = current_user || user.role == 'admin'
+    user.admin?
   end
 
   def update?
@@ -44,25 +44,25 @@ class WikiPolicy < ApplicationPolicy
 
     def resolve
       wikis = []
-      if user.role == 'admin'
-        wikis = scope.all # if the user is an admin, show them all the wikis
+      if user.nil?
+        wikis = scope.all
       elsif user.role == 'premium'
         all_wikis = scope.all
         all_wikis.each do |wiki|
-          if wiki.public? || wiki.owner == user || wiki.collaborators.include?(user)
-            wikis << wiki # if the user is premium, only show them public wikis, or the private wikis they created, or private wikis they are a collaborator on
+          if !wiki.private || user = wiki.user || wiki.collaborators.include?(user)
+            wikis << wiki
           end
         end
-      else # this is for standard user
+      else
         all_wikis = scope.all
         wikis = []
         all_wikis.each do |wiki|
-          if wiki.public? || wiki.collaborators.inclue?(user)
-            wikis << wiki # only show standard users public wikis and private wikis they are a collaborator on
+          if !wiki.private || wiki.collaborators.include?(user)
+            wikis << wiki
           end
         end
       end
-      wikis # return the wikis array we've built up
+      wikis
     end
   end
 end

@@ -1,13 +1,9 @@
 class ChargesController < ApplicationController
   def new
-    @stripe_btn_data = {
-      key: "#{ Rails.configuration.stripe[:publishable_key] }",
-      description: "Blocipedia Membership - #{current_user.email}",
-      amount: @amount
-    }
   end
 
   def create
+    # Amount in cents
     @amount = 1500
 
     customer = Stripe::Customer.create(
@@ -22,19 +18,35 @@ class ChargesController < ApplicationController
       :currency    => 'usd'
     )
 
-    flash[:success] = "Thanks for upgrading, #{current_user.email}!"
-    current_user.update_attribute(:role, 'premium')
+    current_user.role = 'premium'
+    current_user.save!
     redirect_to edit_user_registration_path
 
-#    Stripe::Subscription.create(
-#      :customer => customer.id,
-#      :plan => "premium",
-#    )
-
-#    current_user.set_attribute(:role, 'premium')
-
-    rescue Stripe::CardError => e
+  rescue Stripe::CardError => e
     flash[:error] = e.message
     redirect_to new_charge_path
   end
+
+  def destroy
+    customer = Stripe::Customer.retrieve(current_user.stripe_id)
+    if customer.delete
+      flash[:notice] = "\"#{current_user.email}\" was downgraded to standard successfully."
+      current_user.role = 'standard'
+      current_user.save!
+
+      wikis = current_user.wikis
+      wikis.each do |wiki|
+        if wiki.private
+          wiki.private = false
+          wiki.save!
+        end
+      end
+
+      redirect_to new_charge_path
+    else
+      flash.now[:alert] = "There was an error downgrading the user."
+      redirect_to new_charge_path
+    end
+  end
+
 end
